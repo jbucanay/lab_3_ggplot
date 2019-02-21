@@ -17,45 +17,54 @@ library(here)
 
 # Introduction to ggplot2
 
-```{r read_data,message=FALSE}
-mcars <- read_csv(here('_data','mtcars.csv'))
-```
+“ggplot()” is the generic function call. A plot can include any of the following objects.
 
-“ggplot()” is the generic function call
+* `ggplot` - the primary building block of a chart. By itself only generates a blank chart.
+* `aes` - short for 'aesthetic mapping'. This function tells the plot how to map data to different portions of the chart (e.g. x-axis, y-axis, fill, etc.)
+* `geom` - short for 'geometric object'. These are the actual charts, a short list of options follows.
+    * `geom_point` - scatterplot
+    * `geom_bar` - bar chart
+    * `geom_line` - line chart
+* `coord` - functions to modify the coordinate space. The most commonly used is `coord_flip` to rotate a chart 90 degrees.
+* `facet` - these control how many charts are shown. We will cover these in more detail in the next lab.
+* `theme` - functions to modify the overall look and feel over the chart.
 
-Basic format: ggplot(dataframe, aes(x = data_column_1, y = data_column_2)) + geom_some_geom()
+The great thing about ggplot is that it allows you to control nearly every aspect of a data visualization. Because there is so much control, there is also a learning curve associated with that level of control.
+
+The basic structure of a ggplot call is to first call the ggplot function and then add the different components to the chart. The aesthetic mappings can be added when `ggplot` is called or they can be added in the individual geometric objects. If added in the `ggplot` call, these aesthetic mappings will be used in all `geom` functions. You would add them to the `geom` function if you wanted to override the settings in `ggplot`.
+
 
 ### mtcars | weight vs. miles per gallon
 
+In this example, we have a basic `ggplot` call with data and aesthetic mappings in the `ggplot` function.
 ```{r scatter}
 ggplot(mtcars, aes(x = wt, y = mpg)) +
     geom_point()
 ```
 
-* “mtcars” is the dataset that we are using
-* There are different kinds of objects in R. The mtcars dataset object is a dataframe.
-* “geom” is a geometric object that is used to represent data. Bars, lines, points are examples of geometric objects.
-* “aes” is short for aesthetic attributes. This is where we put the visual properties of the “geoms”. Position
-   on the graph is an aestetic attribute (which is why we assign the x and y values here). Other aesthetic
-   attribute examples include color, shape, etc.
-* In summary: Using the “ggplot” function we would like to graph a relationship within mtcars dataset. We want to put
-  the “Weight” variable on the x-axis and the “MPG” variable on the y-sxis. By choosing geom_point(), it will result
-  in a scatter plot.
-
-### heightweight | height vs. age  
-
-```{r hw,message=FALSE}
-df.heightweight <- read_csv(here('_data','heightweight.csv'))
-df.heightweight
+Here we produce the same chart but specify aesthetic mappings along with the `geom`. Note that the two charts are exactly the same.
+```{r scatter2}
+ggplot(mtcars) +
+    geom_point(aes(x = wt, y = mpg))
 ```
 
-* df.heightweight is an object of type dataframe
-* the name of this object is “df.heightweight”
+If you want to get very specific, the data used can also be added at the `geom` level. This allows you to build a visualization on multiple data sets (if that's something you want to do). Going forward we will likely specify data and aesthetic mappings in the `ggplot` function but wanted to point out that there is some flexibility with how/where you specify those things.
+
+```{r scatter3}
+ggplot() +
+    geom_point(aes(x = wt, y = mpg),data=mtcars)
+```
+
+### heightweight | height vs. age  
+* df.heightweight is an object of type tibble
 * it has 236 observations and 5 variables
 * variables can be accessed by the convention “df.heightweight$ageYear”
 * variables have different types themselves, which costrain how we can visualize them effectively
 
-```{r hw_scatter}
+```{r hw,message=FALSE}
+df.heightweight <- read_csv(here('_data','heightweight.csv'))
+df.heightweight
+
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn)) + 
   geom_point()
 ```
@@ -64,66 +73,65 @@ ggplot(df.heightweight, aes(x = ageYear, y = heightIn)) +
 
 ### heightweight | height vs. age | include average height as reference 
 
-add the average height to the plot for the reader's reference
+Add the average height to the plot for the reader's reference. Note that we're adding a second `geom` to the chart and even overriding the aesthetic mapping. This is a good example of how to add extra/aggregated data to a chart.
 ```{r hw_scatter2}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn)) +
   geom_point() +
-  geom_hline(yintercept=mean(df.heightweight$heightIn)) # note this new component to the ggplot call
+  geom_hline(yintercept=mean(df.heightweight$heightIn))
 ```
 
 ### heightweight | height vs. age by gender
+In this example, we add the 'color' aesthetic to the chart. You can see that `ggplot` automatically recognizes the different levels in the 'sex' variable and colors them differently.
+
 ```{r hw3}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn, colour = sex)) +  
   geom_point()
 ```
 
-note the addition of the colour aesthetic
-
 ### heightweight | height vs. age by weight
+In this example, we see a continuous variable specified for the color aesthetic and note that `ggplot` uses a continuous color scale.
 ```{r hw4}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn, colour = weightLb)) +
   geom_point()
 ```
 
-note how the date type (i.e. continuous) of the colour aesthetic affects the rendering
 
-increase the size of the points by adding the size aesthetic
+Here, we modify the size of the points using a static value.
 ```{r hw5}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn, colour = weightLb)) +
   geom_point(size = 5)
 ```
 
-add transparency factor to points
+Now the points remain the same size but we add transparency.
 ```{r hw6}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn, colour = weightLb)) +
   geom_point(size = 5, alpha = 0.5)
 ```
 
-### create line graph from text - step by step
+***
+
+### Create line graph from text - step by step
 ```{r txt_read,message=FALSE}
-df.line.graph <- read_csv(here('_data','line.csv'))
-str(df.line.graph)
-head(df.line.graph)
-summary(df.line.graph)
-nrow(df.line.graph)
+df_line_graph <- read_csv(here('_data','line.csv'))
+df_line_graph
 ```
 
 basic line graph
 ```{r txt_line}
-ggplot(df.line.graph, aes(x=monthNum, y = volume, colour=type)) + 
+ggplot(df_line_graph, aes(x=monthNum, y = volume, colour=type)) + 
   geom_line()
 ```
 
 remove gridelines
 ```{r txt_remove}
-ggplot(df.line.graph, aes(x=monthNum, y = volume, colour=type)) +
+ggplot(df_line_graph, aes(x=monthNum, y = volume, colour=type)) +
   geom_line() +
   theme_classic()
 ```
 
 add points to follow example from text
 ```{r}
-ggplot(df.line.graph, aes(x = monthNum, y = volume, colour = type)) +
+ggplot(df_line_graph, aes(x = monthNum, y = volume, colour = type)) +
   geom_line() +
   theme_classic() +
   geom_point(size = 4)
@@ -131,29 +139,29 @@ ggplot(df.line.graph, aes(x = monthNum, y = volume, colour = type)) +
 
 fix the x-axis
 ```{r}
-ordered.month.list <- unique(as.character(df.line.graph$month))
-df.line.graph$month <- factor(df.line.graph$month, levels=ordered.month.list)
-ggplot(df.line.graph, aes(x = month, y = volume, colour = type, group = type)) +
+ordered.month.list <- unique(as.character(df_line_graph$month))
+df_line_graph$month <- factor(df_line_graph$month, levels=ordered.month.list)
+ggplot(df_line_graph, aes(x = month, y = volume, colour = type, group = type)) +
   geom_line() +
   theme_classic()
 ```
 
 label lines directly
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line() +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type)
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type)
             , hjust=0.9, vjust=-0.5) +
   theme(legend.position=("none"))
 ```
 
 change the colors of the series
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line() +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type),
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type),
             hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none"))
@@ -161,10 +169,10 @@ ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
 
 increase the thickness of series lines
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line(size=1) +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type)
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type)
             , hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none"))
@@ -172,10 +180,10 @@ ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
 
 change the color of the axis lines to grey
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line(size=1) +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type), 
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type), 
             hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none"),axis.line = element_line(color = "#bdbdbd"))
@@ -183,10 +191,10 @@ ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
 
 change the color of the axis ticks to grey
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line(size=1) +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type),
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type),
             hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none"),
@@ -197,10 +205,10 @@ ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
 
 change the color of the axis labels to grey
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line(size=1) +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type)
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type)
             , hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none")
@@ -212,10 +220,10 @@ ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
 
 change the color of the axis titles to grey
 ```{r}
-ggplot(df.line.graph, aes(x=month, y = volume, colour = type, group = type)) +
+ggplot(df_line_graph, aes(x=month, y = volume, colour = type, group = type)) +
   geom_line(size=1) +
   theme_classic() +
-  geom_text(data = df.line.graph[df.line.graph$month == "Dec", ], aes(label = type)
+  geom_text(data = df_line_graph[df_line_graph$month == "Dec", ], aes(label = type)
             , hjust=0.9, vjust=-0.5) +
   scale_color_manual(values= c("#3182bd", "#bdbdbd")) +
   theme(legend.position=("none")
