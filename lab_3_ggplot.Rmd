@@ -25,6 +25,7 @@ library(here)
     * `geom_point` - scatterplot
     * `geom_bar` - bar chart
     * `geom_line` - line chart
+* `labs` - chart labels and titles
 * `coord` - functions to modify the coordinate space. The most commonly used is `coord_flip` to rotate a chart 90 degrees.
 * `facet` - these control how many charts are shown. We will cover these in more detail in the next lab.
 * `theme` - functions to modify the overall look and feel over the chart.
@@ -86,6 +87,33 @@ In this example, we add the 'color' aesthetic to the chart. You can see that `gg
 ```{r hw3}
 ggplot(df.heightweight, aes(x = ageYear, y = heightIn, colour = sex)) +  
   geom_point()
+```
+
+If we want a simple bar chart showing the average height by sex, we first pre-process the data calculating the average we want and then use `geom_col`.
+
+```{r hw_col}
+by_sex <- df.heightweight %>% group_by(sex) %>% summarise(mean_height=mean(heightIn))
+ggplot(by_sex) +
+  geom_col(aes(x=sex,y=mean_height))
+```
+
+Not a super helpful chart, but it illustrates how to make a bar chart. We could also look at a boxplot for the same data to look at the distribution of values. In this example, we dress up the chart a little with some color and an added theme to make it look a little cleaner.
+
+```{r hw_col2}
+ggplot(df.heightweight) +
+  geom_boxplot(aes(x=sex,y=heightIn,fill=sex)) +
+  theme_bw() +
+  labs(x='Sex',y='Height (in)') +
+  theme(legend.position='none')
+```
+
+We can also look at a density plot for each using the fill aesthetic and alpha blending to make a good looking chart. Note that we leave the legend on this one because `sex` doesn't show up on an axis.
+
+```{r hw_density}
+ggplot(df.heightweight) +
+  geom_density(aes(x=heightIn,fill=sex),alpha=0.6) +
+  labs(x='Height (in)',y='Density',fill='Sex') +
+  theme_bw()
 ```
 
 ### heightweight | height vs. age by weight
