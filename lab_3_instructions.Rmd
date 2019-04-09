@@ -1,7 +1,6 @@
 ---
-title: 'Lab 3: Assignment'
+title: 'Lab 3: Instructions'
 author: "Jeremy Morris"
-date: "2/20/2019"
 output: 
   html_document: 
     theme: cosmo
@@ -16,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * Learn the basics of using the ggplot function
 * Go from data acquisition to visualization
 
-### Assignment
+### Instructions
 
 * Review the in-class lab found in this project.
 * Find a data set you find interesting.
