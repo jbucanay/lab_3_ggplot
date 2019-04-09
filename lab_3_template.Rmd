@@ -1,0 +1,23 @@
+---
+title: "Lab 3 - ggplot"
+author: "YOUR NAME GOES HERE"
+date: "4/17/2019"
+output: 
+  html_document: 
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Plot Description
+
+Some text goes here describing your plot.
+
+## Plot
+
+```{r myplot}
+```
