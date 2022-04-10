@@ -2,39 +2,44 @@
 title: "Lab 3 - ggplot"
 author: "Gilbert Baracka"
 date: "4/13/2022"
-output: 
-  html_document: 
+output:
+  html_document:
     theme: cosmo
+  pdf_document: default
 ---
-
+# Premier League data for the 2018-2019 Season
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
+library("jsonlite")
+library(lubridate)
 
 ```
 
-```{r data, include=FALSE}
-install.packages("jsonlite", repos="https://cran.rstudio.com/")
-library("jsonlite")
-
+```{r raw data, include=TRUE}
 csv_file <- "https://pkgstore.datahub.io/sports-data/english-premier-league/season-1819_csv/data/916634f7ec37dd45c86159bc723eb340/season-1819_csv.csv"
 data <-read.csv(csv_file)
 
 
 
 ```
-```{r data}
-clean_data <- data %>% select(Div:HTR)
+```{r cleandata}
+clean_data <- data %>% 
+    select(Div:HTR) %>%
+    filter(HomeTeam == "Man United" | AwayTeam == "Man United") %>%
+    mutate(Date = dmy(Date))
+    
 print(clean_data)
 
 ```
 
 ## Plot Description
 
-Some text goes here describing your plot.
+Manchester United performance at home and away throughout the season. 
 
 ## Plot
 
 ```{r myplot}
+
 ```
