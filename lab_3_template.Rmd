@@ -18,21 +18,10 @@ library(ggplot2)
 install.packages("jsonlite", repos="https://cran.rstudio.com/")
 library("jsonlite")
 
-json_file <- 'https://datahub.io/sports-data/english-premier-league/datapackage.json'
-json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+csv_file <- "https://pkgstore.datahub.io/sports-data/english-premier-league/season-1819_csv/data/916634f7ec37dd45c86159bc723eb340/season-1819_csv.csv"
+data <-read.csv(csv_file)
 
-# get list of all resources:
-print(json_data$resources$name)
 
-# print all tabular data(if exists any)
-for(i in 1:length(json_data$resources$datahub$type)){
-  if(json_data$resources$datahub$type[i]=='derived/csv'){
-    path_to_file = json_data$resources$path[i]
-    print(path_to_file["https://pkgstore.datahub.io/sports-data/english-premier-league/season-1819_csv/data/916634f7ec37dd45c86159bc723eb340/season-1819_csv.csv"])
-    data <- read.csv(url(path_to_file))
-    print(data)
-  }
-}
 
 ```
 ```{r data}
