@@ -1,7 +1,7 @@
 ---
 title: "Lab 3 - ggplot"
-author: "YOUR NAME GOES HERE"
-date: "4/17/2019"
+author: "Gilbert Baracka"
+date: "4/13/2022"
 output: 
   html_document: 
     theme: cosmo
@@ -11,6 +11,34 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
+
+```
+
+```{r data, include=FALSE}
+install.packages("jsonlite", repos="https://cran.rstudio.com/")
+library("jsonlite")
+
+json_file <- 'https://datahub.io/sports-data/english-premier-league/datapackage.json'
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+# get list of all resources:
+print(json_data$resources$name)
+
+# print all tabular data(if exists any)
+for(i in 1:length(json_data$resources$datahub$type)){
+  if(json_data$resources$datahub$type[i]=='derived/csv'){
+    path_to_file = json_data$resources$path[i]
+    print(path_to_file["https://pkgstore.datahub.io/sports-data/english-premier-league/season-1819_csv/data/916634f7ec37dd45c86159bc723eb340/season-1819_csv.csv"])
+    data <- read.csv(url(path_to_file))
+    print(data)
+  }
+}
+
+```
+```{r data}
+clean_data <- data %>% select(Div:HTR)
+print(clean_data)
+
 ```
 
 ## Plot Description
